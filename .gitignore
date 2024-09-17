@@ -13,3 +13,6 @@ __pycache__/
 
 # Ignoriere recipes.json
 recipes.json
+
+# ignore password
+mailstuff.md
