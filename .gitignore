@@ -1,0 +1,15 @@
+# virtual environment
+venv/
+# Python Bytecode
+__pycache__/
+*.pyc
+
+# macOS spezifische Dateien
+.DS_Store
+
+# IDE-spezifische Dateien
+.vscode/
+*.swp
+
+# Ignoriere recipes.json
+recipes.json
