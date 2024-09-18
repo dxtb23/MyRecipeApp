@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 import requests
 import json
+import random
 
 # Funktion zum Scrapen von Rezepten von einer einzelnen Seite
 def scrape_recipes_from_page(url):
@@ -52,3 +53,10 @@ with open('recipes.json', 'w') as f:
     json.dump(limited_recipes, f, indent=4)
 
 print(f"Erfolgreich {len(limited_recipes)} Rezepte gescrappt und in 'recipes.json' gespeichert.")
+
+# Randomizer 2 Rezepte auswählen
+def get_random_recipes(recipes, num=2):
+    return random.sample(recipes, min(num, len(recipes)))
+
+# Wähle zwei zufällige Rezepte aus
+random_recipes = get_random_recipes(limited_recipes)
