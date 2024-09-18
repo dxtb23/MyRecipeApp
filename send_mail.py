@@ -42,11 +42,11 @@ for recipe in recipes:
 # E-Mail-Konfiguration
 subject = 'Ihre gescrappten Rezepte'
 to_email = 'trialbusiness@fn.de'
-from_email = 'd_sein_mailgedoens@freenet.de'
+from_email = config['username']
 smtp_server = 'mx.freenet.de'
 smtp_port = 587  # Typischerweise 587 für TLS
-username = 'deineemail@example.com'
-password = 'deinpasswort'
+username = config['username']
+password = config['password']
 
 # Versende die E-Mail
 send_email(subject, email_body, to_email, from_email, smtp_server, smtp_port, username, password, attachment_path='recipes.json')

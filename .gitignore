@@ -16,3 +16,6 @@ recipes.json
 
 # ignore password
 mailstuff.md
+
+# configuration der passwoerter
+config.json
