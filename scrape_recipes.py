@@ -12,18 +12,33 @@ def scrape_recipes_from_page(url):
     for container in recipe_containers:
         title_tag = container.find('h2', class_='post-summary__title').find('a')
         link_tag = container.find('a', class_='post-summary__image')
-        
+        image_tag = container.find('img')
+
         title = title_tag.text if title_tag else 'Kein Titel gefunden'
         link = link_tag['href'] if link_tag else 'Kein Link gefunden'
+        image_url = image_tag['src'] if image_tag else 'Kein Bild gefunden'
+
+        # Öffne die Rezeptseite, um die Zutaten zu scrapen
+        recipe_response = requests.get(link)
+        recipe_soup = BeautifulSoup(recipe_response.content, 'html.parser')
+        
+        # Zutaten extrahieren
+        ingredients_container = recipe_soup.find('div', class_='wprm-recipe-ingredients-container')
+        ingredients = []
+        if ingredients_container:
+            ingredient_items = ingredients_container.find_all('li')
+            ingredients = [item.text.strip() for item in ingredient_items]
         
         recipes.append({
             'title': title,
-            'link': link
+            'link': link,
+            'image_url': image_url,
+            'ingredients': ingredients  # Zutaten hinzufügen
         })
 
     return recipes
 
-# Funktion zum Sammeln der Rezepte von nur zwei Seiten
+# Funktion zum Sammeln der Rezepte von mehreren Seiten
 def scrape_limited_recipes(base_url, num_pages):
     all_recipes = []
     for page_number in range(1, num_pages + 1):

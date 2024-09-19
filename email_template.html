@@ -36,6 +36,11 @@
       color: #82c91e;
       text-decoration: none;
     }
+    .recipe img {
+      max-width: 100%;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
     .footer {
       text-align: center;
       color: #888;
@@ -52,10 +57,20 @@
     <div class="content">
       <div class="recipe">
         <h2>{{ recipe_1_title }}</h2>
+        <!-- Klickbares Rezeptbild für Rezept 1 -->
+        <a href="{{ recipe_1_link }}">
+          <img src="{{ recipe_1_image }}" alt="{{ recipe_1_title }}">
+        </a>
+        <!-- Text-Link für Rezept 1 -->
         <p><a href="{{ recipe_1_link }}">Zum Rezept</a></p>
       </div>
       <div class="recipe">
         <h2>{{ recipe_2_title }}</h2>
+        <!-- Platzhalter für klickbares Rezeptbild für Rezept 2 -->
+        <a href="{{ recipe_2_link }}">
+          <img src="{{ recipe_2_image }}" alt="{{ recipe_2_title }}">
+        </a>
+        <!-- Text-Link für Rezept 2 -->
         <p><a href="{{ recipe_2_link }}">Zum Rezept</a></p>
       </div>
     </div>
