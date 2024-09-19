@@ -23,16 +23,18 @@ def get_random_recipes(recipes, num=2):
 # Wähle zwei zufällige Rezepte aus
 random_recipes = get_random_recipes(recipes)
 
-# Erstelle den E-Mail-Text mit den Rezepten
-recipe_texts = []
-for recipe in random_recipes:
-    recipe_texts.append(f"{recipe['title']}: {recipe['link']}")
-
-# E-Mail-Inhalt
-email_body = "Hier sind deine zufällig ausgewählten Rezepte:\n\n" + "\n".join(recipe_texts)
-
-# Betreff (Subject) dynamisch mit den Rezeptnamen
+# Betreff dynamisch mit den Rezeptnamen
 subject = f"Rezepte: {random_recipes[0]['title']} & {random_recipes[1]['title']}"
+
+# HTML-Datei lesen und Platzhalter ersetzen
+with open('email_template.html', 'r') as f:
+    email_body = f.read()
+
+# Ersetze die Platzhalter im HTML mit den Rezeptdaten
+email_body = email_body.replace('{{ recipe_1_title }}', random_recipes[0]['title'])
+email_body = email_body.replace('{{ recipe_1_link }}', random_recipes[0]['link'])
+email_body = email_body.replace('{{ recipe_2_title }}', random_recipes[1]['title'])
+email_body = email_body.replace('{{ recipe_2_link }}', random_recipes[1]['link'])
 
 def send_email(subject, body, to_email, from_email):
     mailjet = Client(auth=(api_key, api_secret), version='v3.1')
@@ -43,7 +45,7 @@ def send_email(subject, body, to_email, from_email):
                 'From': {'Email': from_email},
                 'To': [{'Email': to_email}],
                 'Subject': subject,
-                'TextPart': body
+                'HTMLPart': body
             }
         ]
     }
