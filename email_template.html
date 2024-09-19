@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 600px;
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    }
+    .header {
+      text-align: center;
+      padding: 20px;
+      background-color: #82c91e;
+      color: white;
+      border-radius: 10px 10px 0 0;
+    }
+    .content {
+      margin: 20px 0;
+    }
+    .recipe {
+      margin-bottom: 20px;
+    }
+    .recipe h2 {
+      color: #333;
+      font-size: 20px;
+    }
+    .recipe a {
+      color: #82c91e;
+      text-decoration: none;
+    }
+    .recipe img {
+      max-width: 100%;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+    .footer {
+      text-align: center;
+      color: #888;
+      font-size: 12px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Deine zufälligen Rezepte</h1>
+    </div>
+    <div class="content">
+      <div class="recipe">
+        <h2>{{ recipe_1_title }}</h2>
+        <!-- Klickbares Rezeptbild für Rezept 1 -->
+        <a href="{{ recipe_1_link }}">
+          <img src="{{ recipe_1_image }}" alt="{{ recipe_1_title }}">
+        </a>
+        <!-- Text-Link für Rezept 1 -->
+        <p><a href="{{ recipe_1_link }}">Zum Rezept</a></p>
+      </div>
+      <div class="recipe">
+        <h2>{{ recipe_2_title }}</h2>
+        <!-- Platzhalter für klickbares Rezeptbild für Rezept 2 -->
+        <a href="{{ recipe_2_link }}">
+          <img src="{{ recipe_2_image }}" alt="{{ recipe_2_title }}">
+        </a>
+        <!-- Text-Link für Rezept 2 -->
+        <p><a href="{{ recipe_2_link }}">Zum Rezept</a></p>
+      </div>
+    </div>
+    <div class="footer">
+      <p>Viel Spaß beim Kochen! Besuche <a href="https://minimalistbaker.com">Minimalist Baker</a> für mehr Rezepte.</p>
+    </div>
+  </div>
+</body>
+</html>
