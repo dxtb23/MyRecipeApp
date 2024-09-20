@@ -4,6 +4,7 @@ import json
 import os
 from datetime import datetime, timedelta
 import base64
+from icalendar import Calendar, Event
 
 # Lade die Konfigurationsdaten aus der config.json
 with open('config.json', 'r') as config_file:
@@ -23,55 +24,36 @@ with open('recipes.json', 'r') as f:
 def get_random_recipes(recipes, num=2):
     return random.sample(recipes, min(num, len(recipes)))
 
-# Funktion zum Erstellen einer ICS-Datei
+# Funktion zum Erstellen einer ICS-Datei mit dem icalendar Package
 def create_ics_file(recipe):
     event_name = f"Zutaten für {recipe['title']}"
-    event_date = (datetime.now() + timedelta(days=1)).strftime('%Y%m%dT090000')  # Für den nächsten Tag um 09:00 Uhr
-    event_end_date = (datetime.now() + timedelta(days=1, hours=1)).strftime('%Y%m%dT100000')  # 1 Stunde später
+    event_date = (datetime.now() + timedelta(days=1)).replace(hour=9, minute=0, second=0, microsecond=0)
+    event_end_date = event_date + timedelta(hours=1)  # Endet 1 Stunde später um 10:00 Uhr
 
-    # Zutaten in einen String umwandeln und umbrechen
-    ingredients_list = wrap_text("\r\n".join(recipe['ingredients']))
-    # Erstelle den ICS-Inhalt
-    ics_content = f"""BEGIN:VCALENDAR
-VERSION:2.0
-PRODID:-//Your Company//NONSGML v1.0//EN
-BEGIN:VEVENT
-UID:{recipe['title']}@yourdomain.com
-DTSTAMP:{datetime.now().strftime('%Y%m%dT%H%M%SZ')}
-DTSTART:{event_date}
-DTEND:{event_end_date}
-SUMMARY:{event_name}
-DESCRIPTION:{ingredients_list}
-END:VEVENT
-END:VCALENDAR"""
+    
+    # Erstelle ein iCalendar-Event
+    cal = Calendar()
+    event = Event()
+    
+    event.add('uid', recipe['title'])
+    event.add('summary', event_name)
+    event.add('dtstart', event_date)
+    event.add('dtend', event_end_date)
+    
+    #Zutatenliste in die Description als einfacher Text einfügen
+    ingredients = "\n".join([f"- {ingredient}" for ingredient in recipe['ingredients']])
+    event.add('description', f"Zutaten für das Rezept:\n{ingredients}")
 
+    
+    cal.add_component(event)
+    
+    # Speichere die ICS-Datei
     ics_filename = f"Rezepteinkauf_{recipe['title']}.ics"
-    # Schreibe die ICS-Datei
-    with open(ics_filename, 'w') as ics_file:
-        ics_file.write(ics_content)
-
+    with open(ics_filename, 'wb') as ics_file:
+        ics_file.write(cal.to_ical())
+    
     return ics_filename
 
-# wrapfukntion zum zeilenumbrechen für die ics, da nicht alle zeichenanzahl akzeptiert wird
-def wrap_text(text, max_length=72):
-    """Wrap text to the specified maximum line length without breaking words."""
-    words = text.split()
-    wrapped_lines = []
-    current_line = ""
-
-    for word in words:
-        if len(current_line) + len(word) + 1 > max_length:
-            wrapped_lines.append(current_line)
-            current_line = word
-        else:
-            if current_line:
-                current_line += " "
-            current_line += word
-
-    if current_line:
-        wrapped_lines.append(current_line)
-
-    return '\r\n'.join(wrapped_lines)
 # Wähle zwei zufällige Rezepte aus
 random_recipes = get_random_recipes(recipes)
 
@@ -90,6 +72,15 @@ email_body = email_body.replace('{{ recipe_2_link }}', random_recipes[1]['link']
 email_body = email_body.replace('{{ recipe_1_image }}', random_recipes[0]['image_url'])  # Bild für Rezept 1
 email_body = email_body.replace('{{ recipe_2_image }}', random_recipes[1]['image_url'])  # Bild für Rezept 2
 
+# Zutatenliste als HTML-Liste für das erste Rezept erstellen
+ingredients_1 = "<ul>\n" + "\n".join([f"<li>{ingredient}</li>" for ingredient in random_recipes[0]['ingredients']]) + "\n</ul>"
+# Zutatenliste als HTML-Liste für das zweite Rezept erstellen
+ingredients_2 = "<ul>\n" + "\n".join([f"<li>{ingredient}</li>" for ingredient in random_recipes[1]['ingredients']]) + "\n</ul>"
+
+# Füge die Zutatenlisten in das HTML-Template ein
+email_body = email_body.replace('{{ recipe_1_ingredients }}', ingredients_1)
+email_body = email_body.replace('{{ recipe_2_ingredients }}', ingredients_2)
+
 # Funktion zur Konvertierung der ICS-Datei in Base64
 def encode_file_to_base64(file_path):
     with open(file_path, 'rb') as file:
@@ -100,15 +91,18 @@ def encode_file_to_base64(file_path):
 def send_email(subject, body, to_email, from_email):
     mailjet = Client(auth=(api_key, api_secret), version='v3.1')
 
-    # Erstelle ICS-Datei für das erste Rezept und konvertiere sie in Base64
-    ics_filename = create_ics_file(random_recipes[0])
-    base64_content = encode_file_to_base64(ics_filename)
-
-    attachments = [{
-        'ContentType': 'application/ics',
-        'Filename': f'Rezepteinkauf_{random_recipes[0]["title"]}.ics',
-        'Base64Content': base64_content
-    }]
+    attachments = []
+    
+    # Erstelle ICS-Dateien für beide Rezepte und konvertiere sie in Base64
+    for recipe in random_recipes:
+        ics_filename = create_ics_file(recipe)
+        base64_content = encode_file_to_base64(ics_filename)
+        attachments.append({
+            'ContentType': 'application/ics',
+            'Filename': f'Rezepteinkauf_{recipe["title"]}.ics',
+            'Base64Content': base64_content  # Hier den Base64-Inhalt hinzufügen
+            
+        })
 
     # Daten für die Mailjet API
     data = {
@@ -133,5 +127,6 @@ def send_email(subject, body, to_email, from_email):
 # E-Mail senden
 send_email(subject, email_body, to_email, from_email)
 
-# Entferne die temporäre ICS-Datei nach dem Senden
-os.remove(f"Rezepteinkauf_{random_recipes[0]['title']}.ics")
+# Entferne die temporären ICS-Dateien nach dem Senden
+for recipe in random_recipes:
+    os.remove(f"Rezepteinkauf_{recipe['title']}.ics")
