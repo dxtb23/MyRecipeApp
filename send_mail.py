@@ -29,6 +29,8 @@ def create_ics_file(recipe):
     event_date = (datetime.now() + timedelta(days=1)).strftime('%Y%m%dT090000')  # Für den nächsten Tag um 09:00 Uhr
     event_end_date = (datetime.now() + timedelta(days=1, hours=1)).strftime('%Y%m%dT100000')  # 1 Stunde später
 
+    # Zutaten in einen String umwandeln und umbrechen
+    ingredients_list = wrap_text("\r\n".join(recipe['ingredients']))
     # Erstelle den ICS-Inhalt
     ics_content = f"""BEGIN:VCALENDAR
 VERSION:2.0
@@ -39,7 +41,7 @@ DTSTAMP:{datetime.now().strftime('%Y%m%dT%H%M%SZ')}
 DTSTART:{event_date}
 DTEND:{event_end_date}
 SUMMARY:{event_name}
-DESCRIPTION:Zutaten für das Rezept:\n{"\n".join(recipe['ingredients'])}
+DESCRIPTION:{ingredients_list}
 END:VEVENT
 END:VCALENDAR"""
 
@@ -50,6 +52,26 @@ END:VCALENDAR"""
 
     return ics_filename
 
+# wrapfukntion zum zeilenumbrechen für die ics, da nicht alle zeichenanzahl akzeptiert wird
+def wrap_text(text, max_length=72):
+    """Wrap text to the specified maximum line length without breaking words."""
+    words = text.split()
+    wrapped_lines = []
+    current_line = ""
+
+    for word in words:
+        if len(current_line) + len(word) + 1 > max_length:
+            wrapped_lines.append(current_line)
+            current_line = word
+        else:
+            if current_line:
+                current_line += " "
+            current_line += word
+
+    if current_line:
+        wrapped_lines.append(current_line)
+
+    return '\r\n'.join(wrapped_lines)
 # Wähle zwei zufällige Rezepte aus
 random_recipes = get_random_recipes(recipes)
 
