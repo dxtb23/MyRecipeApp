@@ -47,6 +47,14 @@
       font-size: 12px;
       margin-top: 20px;
     }
+    /* Neue Styles für Zutatenliste */
+    .ingredients {
+      margin-top: 10px;
+    }
+    .ingredients ul {
+      padding-left: 20px;
+      list-style-type: disc;
+    }
   </style>
 </head>
 <body>
@@ -63,15 +71,25 @@
         </a>
         <!-- Text-Link für Rezept 1 -->
         <p><a href="{{ recipe_1_link }}">Zum Rezept</a></p>
+        <!-- Zutatenliste für Rezept 1 -->
+        <div class="ingredients">
+          <h3>Zutaten:</h3>
+          {{ recipe_1_ingredients }}
+        </div>
       </div>
       <div class="recipe">
         <h2>{{ recipe_2_title }}</h2>
-        <!-- Platzhalter für klickbares Rezeptbild für Rezept 2 -->
+        <!-- Klickbares Rezeptbild für Rezept 2 -->
         <a href="{{ recipe_2_link }}">
           <img src="{{ recipe_2_image }}" alt="{{ recipe_2_title }}">
         </a>
         <!-- Text-Link für Rezept 2 -->
         <p><a href="{{ recipe_2_link }}">Zum Rezept</a></p>
+        <!-- Zutatenliste für Rezept 2 -->
+        <div class="ingredients">
+          <h3>Zutaten:</h3>
+          {{ recipe_2_ingredients }}
+        </div>
       </div>
     </div>
     <div class="footer">
