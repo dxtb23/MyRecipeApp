@@ -19,3 +19,6 @@ mailstuff.md
 
 # configuration der passwoerter
 config.json
+
+#sqlite db
+subscribers.db
