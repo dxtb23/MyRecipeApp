@@ -7,8 +7,8 @@ Anschließend werden random 2 Rezepte aus dem Catalog in der `send_mail.py` gepi
 Die Zugänge zu den Rezeptelisten werden in der Mail angezeigt. Hierfür gibts dann auch die `email_template.html` Datei. Diese definiert das Layout.
 Die `app.py` ist eine Flask-app auf der ursprünglich mal die Idee war eine Website zu bauen, in der sich User für den Mailverteiler anmelden können. 2-Faktor-Authent. ist noch nicht integriert. Daten werden in eine einfach per SQL-Query zu befragende `subscribers.db` geschrieben. Der Code ist funktional. 
 Was noch fehlt: die Infos der Subcriber an die `send_mail.py` übergeben, um die Mails zu versenden. 
-
-## Funktionen
+ 
+## Funktionen:
 
 - **Scraping von Rezepten**: Holt Rezepte von den angegebenen Seiten der Minimalist Baker-Website.
 - **Speichern von Rezepten**: Speichert die gesammelten Rezepte in einer `recipes.json`-Datei.
